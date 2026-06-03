@@ -1,0 +1,9 @@
+---
+teamcity_agent_user: agent-tc
+teamcity_agent_group: agent-tc
+teamcity_agent_home: /opt/teamcity-agent
+teamcity_agent_work_dir: /opt/teamcity-agent/work
+teamcity_agent_temp_dir: /opt/teamcity-agent/temp
+teamcity_agent_system_dir: /opt/teamcity-agent/system
+teamcity_agent_java_package_debian: openjdk-21-jdk
+teamcity_agent_java_package_redhat: java-21-openjdk-devel

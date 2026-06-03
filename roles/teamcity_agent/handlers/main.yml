@@ -1,0 +1,6 @@
+---
+- name: Restart teamcity agent
+  ansible.builtin.systemd:
+    name: teamcity-agent
+    state: restarted
+    daemon_reload: true

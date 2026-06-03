@@ -1,0 +1,5 @@
+---
+- name: Restart TeamCity compose
+  community.docker.docker_compose_v2:
+    project_src: "{{ teamcity_server_compose_dir }}"
+    state: restarted

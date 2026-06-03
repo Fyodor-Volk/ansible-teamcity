@@ -1,0 +1,8 @@
+---
+ansible_user: ansible
+
+teamcity_server_url: http://tc-server-01
+teamcity_version: 2025.07
+
+common_update_packages: true
+common_install_docker: true

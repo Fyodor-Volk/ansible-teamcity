@@ -1,0 +1,60 @@
+---
+- name: Update apt package cache
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+  when:
+    - common_update_packages
+    - ansible_os_family == "Debian"
+
+- name: Upgrade apt packages
+  ansible.builtin.apt:
+    upgrade: dist
+  when:
+    - common_update_packages
+    - ansible_os_family == "Debian"
+
+- name: Update dnf packages
+  ansible.builtin.dnf:
+    name: "*"
+    state: latest
+  when:
+    - common_update_packages
+    - ansible_os_family == "RedHat"
+
+- name: Install base packages on Debian family
+  ansible.builtin.apt:
+    name: "{{ common_base_packages }}"
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Install base packages on RedHat family
+  ansible.builtin.dnf:
+    name: "{{ common_base_packages }}"
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: Install Docker packages on Debian family
+  ansible.builtin.apt:
+    name: "{{ common_docker_packages_debian }}"
+    state: present
+  when:
+    - common_install_docker
+    - ansible_os_family == "Debian"
+  notify: Restart docker
+
+- name: Install Docker packages on RedHat family
+  ansible.builtin.dnf:
+    name: "{{ common_docker_packages_redhat }}"
+    state: present
+  when:
+    - common_install_docker
+    - ansible_os_family == "RedHat"
+  notify: Restart docker
+
+- name: Enable and start Docker
+  ansible.builtin.service:
+    name: docker
+    state: started
+    enabled: true
+  when: common_install_docker

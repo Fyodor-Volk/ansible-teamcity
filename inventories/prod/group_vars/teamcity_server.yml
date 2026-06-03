@@ -1,0 +1,9 @@
+---
+teamcity_server_compose_dir: /home/docker/teamcity
+teamcity_server_http_port: 8111
+teamcity_server_https_port: 443
+teamcity_server_nginx_http_port: 80
+
+teamcity_postgres_db: teamcity
+teamcity_postgres_user: teamcity
+teamcity_postgres_password: change_me

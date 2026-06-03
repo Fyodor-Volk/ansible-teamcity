@@ -1,0 +1,9 @@
+---
+- name: Prepare all TeamCity hosts
+  ansible.builtin.import_playbook: bootstrap.yml
+
+- name: Deploy TeamCity server
+  ansible.builtin.import_playbook: teamcity_server.yml
+
+- name: Deploy TeamCity agents
+  ansible.builtin.import_playbook: teamcity_agents.yml

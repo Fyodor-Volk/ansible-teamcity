@@ -1,0 +1,17 @@
+---
+common_update_packages: true
+common_install_docker: true
+
+common_base_packages:
+  - ca-certificates
+  - curl
+  - gnupg
+  - unzip
+
+common_docker_packages_debian:
+  - docker.io
+  - docker-compose-plugin
+
+common_docker_packages_redhat:
+  - docker
+  - docker-compose-plugin

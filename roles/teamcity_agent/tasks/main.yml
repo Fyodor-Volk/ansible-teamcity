@@ -1,0 +1,80 @@
+---
+- name: Install Java on Debian family
+  ansible.builtin.apt:
+    name: "{{ teamcity_agent_java_package_debian }}"
+    state: present
+  when: ansible_os_family == "Debian"
+
+- name: Install Java on RedHat family
+  ansible.builtin.dnf:
+    name: "{{ teamcity_agent_java_package_redhat }}"
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: Create TeamCity agent group
+  ansible.builtin.group:
+    name: "{{ teamcity_agent_group }}"
+    system: true
+
+- name: Create TeamCity agent user
+  ansible.builtin.user:
+    name: "{{ teamcity_agent_user }}"
+    group: "{{ teamcity_agent_group }}"
+    home: "{{ teamcity_agent_home }}"
+    shell: /usr/sbin/nologin
+    system: true
+    create_home: false
+
+- name: Create TeamCity agent directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ teamcity_agent_user }}"
+    group: "{{ teamcity_agent_group }}"
+    mode: "0755"
+  loop:
+    - "{{ teamcity_agent_home }}"
+    - "{{ teamcity_agent_work_dir }}"
+    - "{{ teamcity_agent_temp_dir }}"
+    - "{{ teamcity_agent_system_dir }}"
+    - "{{ teamcity_agent_conf_dir }}"
+
+- name: Download TeamCity build agent
+  ansible.builtin.get_url:
+    url: "{{ teamcity_agent_download_url }}"
+    dest: /tmp/buildAgent.zip
+    mode: "0644"
+
+- name: Unpack TeamCity build agent
+  ansible.builtin.unarchive:
+    src: /tmp/buildAgent.zip
+    dest: "{{ teamcity_agent_home }}"
+    remote_src: true
+    owner: "{{ teamcity_agent_user }}"
+    group: "{{ teamcity_agent_group }}"
+    creates: "{{ teamcity_agent_home }}/bin/agent.sh"
+
+- name: Render TeamCity agent config
+  ansible.builtin.template:
+    src: buildAgent.properties.j2
+    dest: "{{ teamcity_agent_conf_dir }}/buildAgent.properties"
+    owner: "{{ teamcity_agent_user }}"
+    group: "{{ teamcity_agent_group }}"
+    mode: "0644"
+  notify: Restart teamcity agent
+
+- name: Render TeamCity agent systemd unit
+  ansible.builtin.template:
+    src: teamcity-agent.service.j2
+    dest: /etc/systemd/system/teamcity-agent.service
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart teamcity agent
+
+- name: Enable and start TeamCity agent
+  ansible.builtin.systemd:
+    name: teamcity-agent
+    state: started
+    enabled: true
+    daemon_reload: true

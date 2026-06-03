@@ -1,0 +1,6 @@
+---
+- name: Deploy TeamCity agents
+  hosts: teamcity_agents
+  become: true
+  roles:
+    - role: teamcity_agent

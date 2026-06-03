@@ -1,0 +1,45 @@
+---
+services:
+  teamcity-server:
+    image: {{ teamcity_server_image }}
+    container_name: teamcity-server
+    restart: unless-stopped
+    depends_on:
+      - postgresql
+    environment:
+      TEAMCITY_SERVER_MEM_OPTS: "-Xmx2g -XX:ReservedCodeCacheSize=350m"
+    volumes:
+      - {{ teamcity_server_data_dir }}:/data/teamcity_server/datadir
+      - {{ teamcity_server_logs_dir }}:/opt/teamcity/logs
+    networks:
+      - teamcity
+
+  postgresql:
+    image: {{ teamcity_postgres_image }}
+    container_name: teamcity-postgresql
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: {{ teamcity_postgres_db }}
+      POSTGRES_USER: {{ teamcity_postgres_user }}
+      POSTGRES_PASSWORD: {{ teamcity_postgres_password }}
+    volumes:
+      - {{ teamcity_server_postgres_dir }}:/var/lib/postgresql/data
+    networks:
+      - teamcity
+
+  nginx:
+    image: {{ teamcity_nginx_image }}
+    container_name: teamcity-nginx
+    restart: unless-stopped
+    depends_on:
+      - teamcity-server
+    ports:
+      - "{{ teamcity_server_nginx_http_port }}:80"
+    volumes:
+      - {{ teamcity_server_nginx_dir }}/teamcity.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - teamcity
+
+networks:
+  teamcity:
+    driver: bridge

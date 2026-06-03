@@ -1,0 +1,17 @@
+[Unit]
+Description=TeamCity Build Agent
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=forking
+User={{ teamcity_agent_user }}
+Group={{ teamcity_agent_group }}
+WorkingDirectory={{ teamcity_agent_home }}
+ExecStart={{ teamcity_agent_home }}/bin/agent.sh start
+ExecStop={{ teamcity_agent_home }}/bin/agent.sh stop
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,37 @@
+---
+- name: Create TeamCity compose directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  loop:
+    - "{{ teamcity_server_compose_dir }}"
+    - "{{ teamcity_server_data_dir }}"
+    - "{{ teamcity_server_logs_dir }}"
+    - "{{ teamcity_server_postgres_dir }}"
+    - "{{ teamcity_server_nginx_dir }}"
+
+- name: Render TeamCity nginx config
+  ansible.builtin.template:
+    src: nginx.conf.j2
+    dest: "{{ teamcity_server_nginx_dir }}/teamcity.conf"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart TeamCity compose
+
+- name: Render TeamCity docker compose file
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ teamcity_server_compose_dir }}/docker-compose.yml"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart TeamCity compose
+
+- name: Start TeamCity compose stack
+  community.docker.docker_compose_v2:
+    project_src: "{{ teamcity_server_compose_dir }}"
+    state: present

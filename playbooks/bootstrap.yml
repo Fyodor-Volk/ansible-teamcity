@@ -1,0 +1,6 @@
+---
+- name: Bootstrap TeamCity hosts
+  hosts: teamcity
+  become: true
+  roles:
+    - role: common

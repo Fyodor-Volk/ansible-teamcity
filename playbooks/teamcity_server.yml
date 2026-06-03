@@ -1,0 +1,6 @@
+---
+- name: Deploy TeamCity server
+  hosts: teamcity_server
+  become: true
+  roles:
+    - role: teamcity_server

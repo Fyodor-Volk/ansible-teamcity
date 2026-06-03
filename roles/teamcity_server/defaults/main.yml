@@ -1,0 +1,19 @@
+---
+teamcity_server_compose_dir: /home/docker/teamcity
+teamcity_server_image: "jetbrains/teamcity-server:{{ teamcity_version }}"
+teamcity_server_http_port: 8111
+teamcity_server_nginx_http_port: 80
+teamcity_server_https_port: 443
+
+teamcity_server_data_dir: "{{ teamcity_server_compose_dir }}/data"
+teamcity_server_logs_dir: "{{ teamcity_server_compose_dir }}/logs"
+teamcity_server_postgres_dir: "{{ teamcity_server_compose_dir }}/postgres"
+teamcity_server_nginx_dir: "{{ teamcity_server_compose_dir }}/nginx"
+
+teamcity_postgres_image: postgres:16
+teamcity_postgres_db: teamcity
+teamcity_postgres_user: teamcity
+teamcity_postgres_password: change_me
+
+teamcity_nginx_image: nginx:1.27-alpine
+teamcity_nginx_server_name: _
